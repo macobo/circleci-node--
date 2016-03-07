@@ -1,4 +1,5 @@
 _ = require 'lodash'
+CoffeelintDefaultReporter = require 'coffeelint/lib/reporters/default'
 fs = require 'fs'
 mkdirp = require 'mkdirp'
 path = require 'path'
@@ -29,9 +30,11 @@ summarize = (errors, filename) ->
 
 module.exports = class CheckstyleReporter
     constructor: (@errorReport, @options = {}) ->
+      @defaultReporter = new CoffeelintDefaultReporter @errorReport, {quiet: true, colorize: true}
       @options.outFile = @options.outFile || process.env.COFFEELINT_JUNIT || 'lint-results.xml';
 
     publish: =>
+      @defaultReporter.publish()
       testsuites = _(@errorReport.paths)
         .mapValues (errors) ->
           _.filter errors, ({level}) -> level is 'error'
