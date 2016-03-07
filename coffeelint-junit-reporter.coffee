@@ -19,7 +19,7 @@ summarize = (errors, filename) ->
       data.push
         _attr:
           name: "#{filename}:#{error.lineNumber} #{error.description}"
-          classname: ""
+          classname: error.context
           time: 0
       data.push
         failure:
@@ -32,7 +32,11 @@ module.exports = class CheckstyleReporter
       @options.outFile = @options.outFile || process.env.COFFEELINT_JUNIT || 'lint-results.xml';
 
     publish: =>
-      testsuites = _.map @errorReport.paths, summarize
+      testsuites = _(@errorReport.paths)
+        .mapValues (errors) ->
+          _.filter errors, ({level}) -> level is 'error'
+        .map summarize
+        .value()
       xmlData = xml({testsuites}, {declaration: true, indent: '  '})
       mkdirp.sync path.dirname(@options.outFile)
       fs.writeFileSync @options.outFile, xmlData, 'utf-8'
