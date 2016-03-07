@@ -1,7 +1,7 @@
 {
   "name": "circleci-node-toolkit",
   "description": "Util scripts and testing reporters for working with CircleCI",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "homepage": "https://github.com/macobo/circleci-node-toolkit",
   "author": {
     "name": "Karl-Aksel Puulmann",
@@ -30,13 +30,13 @@
     "coffeelint"
   ],
   "dependencies": {
-    "coffeelint": "^1.15.0",
+    "coffeelint": ">=1.10.0",
     "debug": "^2.2.0",
     "lodash": "^4.6.1",
     "mkdirp": "~0.5.1",
     "xml": "^1.0.0"
   },
   "peerDependencies": {
-    "mocha": "^2.2.5"
+    "mocha": ">=2.0.0"
   }
 }
