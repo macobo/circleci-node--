@@ -1,0 +1,32 @@
+{
+  "name": "circleci-node-toolkit",
+  "description": "Util scripts and testing reporters for working with CircleCI",
+  "version": "0.0.0",
+  "homepage": "https://github.com/macobo/circleci-node-toolkit",
+  "author": {
+    "name": "Karl-Aksel Puulmann",
+    "email": "karl@heapanalytics.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/macobo/circleci-node-toolkit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/macobo/circleci-node-toolkit/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/macobo/circleci-node-toolkit/blob/master/LICENSE-MIT"
+    }
+  ],
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "keywords": [
+    "circleci",
+    "testing",
+    "mocha",
+    "coffeelint"
+  ]
+}
