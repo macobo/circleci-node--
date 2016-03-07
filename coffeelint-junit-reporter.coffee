@@ -12,7 +12,7 @@ summarize = (errors, filename) ->
       file: filename
       timestamp: new Date().toISOString().slice(0, -5)
       tests: errors.length
-      errors: errors.length
+      failures: errors.length
       time: 0
   ]
   if errors.length
@@ -40,6 +40,13 @@ module.exports = class CheckstyleReporter
           _.filter errors, ({level}) -> level is 'error'
         .map summarize
         .value()
+      testsuites.unshift
+        _attr:
+          name: 'coffeelint'
+          timestamp: new Date().toISOString().slice(0, -5)
+          tests: _.size @errorReport.paths
+          time: 0
+          failures: _.sumBy testsuites, ({testsuite}) -> testsuite[0]._attr.failures
       xmlData = xml({testsuites}, {declaration: true, indent: '  '})
       mkdirp.sync path.dirname(@options.outFile)
       fs.writeFileSync @options.outFile, xmlData, 'utf-8'

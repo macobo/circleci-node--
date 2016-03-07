@@ -1,7 +1,7 @@
 {
   "name": "circleci-node-toolkit",
   "description": "Util scripts and testing reporters for working with CircleCI",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "homepage": "https://github.com/macobo/circleci-node-toolkit",
   "author": {
     "name": "Karl-Aksel Puulmann",
