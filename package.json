@@ -28,5 +28,13 @@
     "testing",
     "mocha",
     "coffeelint"
-  ]
+  ],
+  "dependencies": {
+    "debug": "^2.2.0",
+    "mkdirp": "~0.5.1",
+    "xml": "^1.0.0"
+  },
+  "peerDependencies": {
+    "mocha": "^2.2.5"
+  }
 }
