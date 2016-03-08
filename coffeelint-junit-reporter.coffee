@@ -5,28 +5,44 @@ mkdirp = require 'mkdirp'
 path = require 'path'
 xml = require 'xml'
 
-summarize = (errors, filename) ->
-  data = [
+singleTestCase = (filename, error) ->
+  testcase = [
     _attr:
-      name: filename,
-      file: filename
-      timestamp: new Date().toISOString().slice(0, -5)
-      tests: errors.length
-      failures: errors.length
+      name: filename
+      classname: filename
       time: 0
   ]
-  if errors.length
-    errors.forEach (error) ->
-      data.push
-        _attr:
-          name: "#{filename}:#{error.lineNumber} #{error.description}"
-          classname: error.context
-          time: 0
-      data.push
-        failure:
-          _cdata:
-            error.description
-  {testsuite: data}
+  if error?
+    testcase[0]._attr.name += ":#{error.lineNumber}"
+    testcase.push
+      failure:
+        _cdata: "(#{error.level}) #{filename}:#{error.lineNumber} #{error.description}"
+
+  {testcase}
+
+createTestCases = (errors, filename) ->
+  if errors.length is 0
+    [singleTestCase filename]
+  else
+    errors.map (error) -> singleTestCase filename, error
+
+summarize = (paths) ->
+  failures = _.sumBy _.values(paths), (errors) -> errors.length
+  total = _.sumBy _.values(paths), (errors) -> Math.max(1, errors.length)
+  description =
+    name: 'coffeelint'
+    time: 0
+    timestamp: new Date().toISOString().slice(0, -5)
+    tests: total
+    failures: failures
+
+  testsuite = _(paths)
+    .map createTestCases
+    .flatten()
+    .unshift {_attr: description}
+    .value()
+
+  testsuite
 
 module.exports = class CheckstyleReporter
     constructor: (@errorReport, @options = {}) ->
@@ -35,18 +51,14 @@ module.exports = class CheckstyleReporter
 
     publish: =>
       @defaultReporter.publish()
-      testsuites = _(@errorReport.paths)
-        .mapValues (errors) ->
-          _.filter errors, ({level}) -> level is 'error'
-        .map summarize
-        .value()
-      testsuites.unshift
-        _attr:
-          name: 'coffeelint'
-          timestamp: new Date().toISOString().slice(0, -5)
-          tests: _.size @errorReport.paths
-          time: 0
-          failures: _.sumBy testsuites, ({testsuite}) -> testsuite[0]._attr.failures
+      relevantPaths = _.mapValues @errorReport.paths, (errors) ->
+        _.filter errors, ({level}) -> level is 'error'
+      testsuite = summarize relevantPaths
+      testsuites = [
+        _attr: testsuite[0]._attr
+      ,
+        {testsuite}
+      ]
       xmlData = xml({testsuites}, {declaration: true, indent: '  '})
       mkdirp.sync path.dirname(@options.outFile)
       fs.writeFileSync @options.outFile, xmlData, 'utf-8'
