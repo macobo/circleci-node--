@@ -13,10 +13,15 @@ singleTestCase = (filename, error) ->
       time: 0
   ]
   if error?
-    testcase[0]._attr.name += ":#{error.lineNumber}"
+    testcase[0]._attr.name = "#{error.message}"
+    testcase[0]._attr.classname = "#{filename}:#{error.lineNumber}"
     testcase.push
       failure:
-        _cdata: "(#{error.level}) #{filename}:#{error.lineNumber} #{error.description}"
+        _cdata: """
+          #{filename}:#{error.lineNumber}\t#{error.line}
+
+          #{error.description}
+          """
 
   {testcase}
 
